@@ -1,0 +1,67 @@
+application:
+  name: chip
+  namespace: chip
+  version: "1.0"
+  image: fidelissauro/chip:latest
+  kind: deployment
+  port: 8080
+  protocol: HTTP
+
+env:
+  CHAOS_ENABLED: "true"
+  ENVIRONMENT: "dev"
+  VERSION: "v1-complete"
+
+replicas:
+  desired: 4
+  minimum: 4
+  maximum: 6
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+
+probe:
+  startup:
+    enabled: false
+    path: /healthcheck
+    failureThreshold: 10
+    periodSeconds: 10
+  liveness:
+    enabled: false
+    path: /liveness
+    failureThreshold: 10
+    periodSeconds: 10
+  readiness:
+    enabled: true
+    path: /readiness
+    failureThreshold: 10
+    periodSeconds: 10
+
+prometheus:
+  scrape: true
+  path: /metrics
+
+autoscaling:
+  hpa:
+    cpu:
+      enabled: true
+      averageUtilization: 80
+    memory:
+      enabled: true
+      averageUtilization: 80
+
+# High Availability Setup
+availability:
+  multiaz: 
+    mode: soft # Ex; soft or hard
+
+  same-host: 
+    mode: soft # Ex; soft or hard
+
+ingress:
+  host: chip.k8s.raj.ninja

@@ -1,0 +1,37 @@
+application:
+  name: healthcheck-app
+  namespace: healthcheck
+  version: "1.0"
+  image: fidelissauro/chip:latest
+  kind: deployment
+  port: 8080
+  protocol: HTTP
+
+env:
+  ENVIRONMENT: "dev"
+  VERSION: "healthcheck-v1"
+
+replicas:
+  desired: 2
+  minimum: 2
+  maximum: 6
+
+probe:
+  startup:
+    enabled: true
+    path: /healthcheck
+    failureThreshold: 10
+    periodSeconds: 10
+  liveness:
+    enabled: true
+    path: /liveness
+    failureThreshold: 10
+    periodSeconds: 10
+  readiness:
+    enabled: true
+    path: /readiness
+    failureThreshold: 10
+    periodSeconds: 10
+
+ingress:
+  host: healcheck-app.k8s.raj.ninja

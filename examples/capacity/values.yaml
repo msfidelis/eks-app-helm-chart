@@ -1,0 +1,44 @@
+application:
+  name: capacity-app
+  namespace: capacity
+  version: "1.0"
+  image: fidelissauro/chip:latest
+  kind: deployment
+  port: 8080
+  protocol: HTTP
+
+env:
+  ENVIRONMENT: "dev"
+  VERSION: "capacity-v1"
+
+replicas:
+  desired: 2
+  minimum: 2
+  maximum: 6
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+
+probe:
+  readiness:
+    enabled: true
+    path: /readiness
+    failureThreshold: 10
+    periodSeconds: 10
+
+autoscaling:
+  hpa:
+    cpu:
+      enabled: true
+      averageUtilization: 80
+    memory:
+      enabled: true
+      averageUtilization: 80
+
+ingress:
+  host: capacity-app.k8s.raj.ninja
