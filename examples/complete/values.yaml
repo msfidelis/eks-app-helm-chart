@@ -63,5 +63,15 @@ availability:
   same-host: 
     mode: soft # Ex; soft or hard
 
+# Retry Options - Envoy
+retry:
+  max_attemps: 2
+  timeout: 
+    enabled: true
+    max_timeout: 4s
+  error:
+    enabled: true
+    errors: gateway-error,connect-failure,refused-stream,5xx
+
 ingress:
   host: chip.k8s.raj.ninja

@@ -64,3 +64,13 @@ availability:
 
   same-host: 
     mode: soft # Ex; soft or hard
+
+retry:
+  max_attemps: 3
+  timeout: 
+    enabled: true
+    max_timeout: 4s
+
+  error:
+    enabled: true
+    errors: gateway-error,connect-failure,refused-stream,5xx

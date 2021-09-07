@@ -22,7 +22,8 @@
 ## Install
 
 ```sh
-git clone 
+git clone git@github.com:msfidelis/eks-app-helm-chart.git
+cd eks-app-helm-chart/
 ```
 
 ## Usage Simple
@@ -107,13 +108,60 @@ chip-7df5b89bb-dcsqp   2/2     Running   0          67s
 
 ### Deployment with hostname Anti-Affinity suggestion 
 
-### Istio Circuit Breakers and Retries by Default
+### Istio Retries by Default
+
+You can enable and disable connections retries on application virtualservice.
+
+```yaml
+# Retry Options - Envoy
+retry:
+  max_attemps: 2
+  timeout: 
+    enabled: true
+    max_timeout: 4s
+  error:
+    enabled: true
+    errors: gateway-error,connect-failure,refused-stream,5xx
+```
 
 ### Horizontal Pod Autoscaling
+
+Setting `autoscaling` key
+
+```yaml
+autoscaling:
+  hpa:
+    cpu:
+      enabled: true
+      averageUtilization: 80
+    memory:
+      enabled: true
+      averageUtilization: 80
+```
 
 ### Vertial Pod Autoscaling
 
 ### Healthcheck and Grace Periods
+
+```yaml
+probe:
+  startup:
+    enabled: true
+    path: /healthcheck
+    failureThreshold: 10
+    periodSeconds: 10
+  liveness:
+    enabled: true
+    path: /liveness
+    failureThreshold: 10
+    periodSeconds: 10
+  readiness:
+    enabled: true
+    path: /readiness
+    failureThreshold: 10
+    periodSeconds: 10
+
+```
 
 ### QoS Distribuition 
 

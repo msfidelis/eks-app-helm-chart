@@ -14,10 +14,14 @@ spec:
         prefix: /
     route:
     - destination:
-        host: {{ .Values.application.name }}
+        host:     {{ .Values.application.name }}
         port:
           number: {{ .Values.application.port }}
     retries:
-      attempts: 4
-      perTryTimeout: 2s
-      retryOn: gateway-error,connect-failure,refused-stream,5xx
+      attempts:       {{ .Values.retry.max_attemps }}
+      {{ if .Values.retry.timeout.enabled }}
+      perTryTimeout:  {{ .Values.retry.timeout.max_timeout }}
+      {{ end }}
+      {{ if .Values.retry.error.enabled }}
+      retryOn:        {{ .Values.retry.error.errors }}
+      {{ end }}
