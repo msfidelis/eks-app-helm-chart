@@ -51,7 +51,9 @@ server: istio-envoy
 
 ### Deployment with AWS Zones Anti-Affinity (Multi-AZ Distribuition)
 
-This chart uses node label `failure-domain.beta.kubernetes.io/zone` to sugest to scheduler where place the pod. You can use `availability.multiaz.mode` with `soft` or `hard` value
+By default Kubernetes (EKS) don't provide multi-az deployments for pods, only for nodes and control plane. 
+
+This chart solve this using node label `failure-domain.beta.kubernetes.io/zone` to sugest to scheduler where place the pod. You can use `availability.multiaz.mode` with `soft` or `hard` value
 
 ```yaml
     spec:
@@ -107,6 +109,25 @@ chip-7df5b89bb-dcsqp   2/2     Running   0          67s
 ```
 
 ### Deployment with hostname Anti-Affinity suggestion 
+
+This chart uses node label `kubernetes.io/hostname` to sugest to scheduler where place the pod. You can use `availability.host.mode` with `soft` or `hard` value. 
+
+The `soft` mode suggest do scheduler do dont' place a pod in a node with one replica already running. The `hard` mode prevent this. 
+
+This example show `hard` mode running `8` replicas running on cluster with `6` nodes. 
+
+```sh
+❯ kubectl get pods -n chip -o wide
+NAME                   READY   STATUS    RESTARTS   AGE
+chip-789cffddb-5zmzx   0/2     Pending   0          4m41s    <none>        <none>                       <none>           <none>
+chip-789cffddb-cktcf   2/2     Running   0          4m40s   10.0.87.162   ip-10-0-80-123.ec2.internal   <none>           <none>
+chip-789cffddb-dhv9c   2/2     Running   0          4m41s   10.0.81.54    ip-10-0-87-5.ec2.internal     <none>           <none>
+chip-789cffddb-ds92c   2/2     Running   0          4m41s   10.0.55.32    ip-10-0-56-184.ec2.internal   <none>           <none>
+chip-789cffddb-k7nlw   2/2     Running   0          4m41s   10.0.66.176   ip-10-0-68-5.ec2.internal     <none>           <none>
+chip-789cffddb-lmpgr   0/2     Pending   0          4m40s    <none>        <none>                       <none>           <none>
+chip-789cffddb-mf5jr   2/2     Running   0          4m41s   10.0.73.74    ip-10-0-65-77.ec2.internal    <none>           <none>
+chip-789cffddb-vtf5x   2/2     Running   0          4m41s   10.0.70.96    ip-10-0-66-110.ec2.internal   <none>           <none>
+```
 
 ### Istio Retries by Default
 

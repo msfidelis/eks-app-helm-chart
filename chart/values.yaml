@@ -60,9 +60,11 @@ ingress:
   
 availability:
   multiaz: 
+    enabled: true
     mode: soft # Ex; soft or hard
 
-  same-host: 
+  host: 
+    enabled: true
     mode: soft # Ex; soft or hard
 
 retry:

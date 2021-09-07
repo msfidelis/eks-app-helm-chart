@@ -13,9 +13,9 @@ env:
   VERSION: "v1-complete"
 
 replicas:
-  desired: 4
-  minimum: 4
-  maximum: 6
+  desired: 10
+  minimum: 10
+  maximum: 10
 
 resources:
   requests:
@@ -58,10 +58,12 @@ autoscaling:
 # High Availability Setup
 availability:
   multiaz: 
+    enabled: false
     mode: soft # Ex; soft or hard
 
-  same-host: 
-    mode: soft # Ex; soft or hard
+  host: 
+    enabled: true
+    mode: hard # Ex; soft or hard
 
 # Retry Options - Envoy
 retry:
@@ -70,7 +72,7 @@ retry:
     enabled: true
     max_timeout: 4s
   error:
-    enabled: true
+    enabled: false
     errors: gateway-error,connect-failure,refused-stream,5xx
 
 ingress:

@@ -21,10 +21,11 @@ spec:
         # version:  "{{ .Values.application.version }}"
     spec:
       affinity:
-
-        {{ if eq .Values.availability.multiaz.mode "soft" }}
         podAntiAffinity:
+
           preferredDuringSchedulingIgnoredDuringExecution:
+
+          {{ if and (eq .Values.availability.multiaz.mode "soft") ( eq .Values.availability.multiaz.enabled true ) }}
           - podAffinityTerm:
               labelSelector:
                 matchExpressions:
@@ -34,11 +35,23 @@ spec:
                   - {{ .Values.application.name }}
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100            
-        {{ end }}
+          {{ end }}
 
-        {{ if eq .Values.availability.multiaz.mode "hard" }}
-        podAntiAffinity:
+          {{ if and (eq .Values.availability.host.mode "soft") (eq .Values.availability.host.enabled true ) }}
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - {{ .Values.application.name }}
+              topologyKey: kubernetes.io/hostname
+            weight: 100            
+          {{ end }}        
+
           requiredDuringSchedulingIgnoredDuringExecution:
+
+          {{ if and (eq .Values.availability.multiaz.mode "hard") (eq .Values.availability.multiaz.enabled true ) }}
           - labelSelector:
               matchExpressions:
               - key: app
@@ -46,9 +59,17 @@ spec:
                 values:
                 - {{ .Values.application.name }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
-        {{ end }}
+          {{ end }}
 
-
+          {{ if and (eq .Values.availability.host.mode "hard") (eq .Values.availability.host.enabled true ) }}
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ .Values.application.name }}
+            topologyKey: kubernetes.io/hostname
+          {{ end }}
 
       containers:
       - image:  {{ .Values.application.image }}

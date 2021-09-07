@@ -1,0 +1,39 @@
+application:
+  name: chip
+  namespace: chip
+  version: "1.0"
+  image: fidelissauro/chip:latest
+  kind: deployment
+  port: 8080
+  protocol: HTTP
+
+env:
+  CHAOS_ENABLED: "true"
+  ENVIRONMENT: "dev"
+  VERSION: "v1-multiaz"
+
+replicas:
+  desired: 2
+  minimum: 2
+  maximum: 6
+
+
+probe:
+  startup:
+    enabled: false
+    path: /healthcheck
+    failureThreshold: 10
+    periodSeconds: 10
+
+# High Availability Setup
+availability:
+  multiaz: 
+    enabled: true
+    mode: soft # Ex; soft or hard
+
+  host: 
+    enabled: true
+    mode: soft # Ex; soft or hard
+
+ingress:
+  host: chip.k8s.raj.ninja
