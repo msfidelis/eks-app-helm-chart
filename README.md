@@ -124,6 +124,15 @@ retry:
     errors: gateway-error,connect-failure,refused-stream,5xx
 ```
 
+### Capacity 
+
+```yaml 
+replicas:
+  desired: 2
+  minimum: 2
+  maximum: 6
+```
+
 ### Horizontal Pod Autoscaling
 
 Setting `autoscaling` key
