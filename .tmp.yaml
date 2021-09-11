@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    meta.helm.sh/release-name: chip
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2021-09-10T23:19:23Z"
+  generation: 20
+  labels:
+    app: chip
+    app.kubernetes.io/managed-by: Helm
+  name: chip
+  namespace: chip
+  resourceVersion: "36167"
+  uid: 6bd399e8-f165-4003-b859-ef54cd7d7c91
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: chip
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        istio-injection: enabled
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        app: chip
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - chip
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+            weight: 100
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - chip
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - env:
+        - name: CHAOS_ENABLED
+          value: "true"
+        - name: ENVIRONMENT
+          value: dev
+        - name: FOO
+          value: BAR
+        - name: PING
+          value: PONG
+        - name: VERSION
+          value: v1-complete
+        image: fidelissauro/chip:latest
+        imagePullPolicy: Always
+        name: chip
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            httpHeaders:
+            - name: Kubernetes-Healthcheck
+              value: Readiness
+            path: /readiness
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2021-09-10T23:19:23Z"
+    lastUpdateTime: "2021-09-10T23:23:34Z"
+    message: ReplicaSet "chip-5c84dc479f" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2021-09-11T00:42:53Z"
+    lastUpdateTime: "2021-09-11T00:42:53Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 20
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2

@@ -1,0 +1,21 @@
+{{ if .Values.circuit_breaker.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name:       {{ .Values.application.name }}
+  namespace:  {{ .Values.application.namespace }}
+spec:
+  host: {{ .Values.application.name }}
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: {{ .Values.circuit_breaker.max_connections }}
+      http:
+        http1MaxPendingRequests:    {{ .Values.circuit_breaker.max_pending_requests }}
+        maxRequestsPerConnection:   {{ .Values.circuit_breaker.max_requests_per_connection }}
+    outlierDetection:
+      consecutive5xxErrors: {{ .Values.circuit_breaker.consecutive_5xx_errors }}
+      interval:             {{ .Values.circuit_breaker.evaluation_interval }}
+      baseEjectionTime:     {{ .Values.circuit_breaker.ejection_time }}
+      maxEjectionPercent:   {{ .Values.circuit_breaker.ejection_percent }}
+{{ end }}

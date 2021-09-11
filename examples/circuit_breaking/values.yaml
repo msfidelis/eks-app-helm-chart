@@ -1,0 +1,46 @@
+application:
+  name: cb-app
+  namespace: cb-app
+  version: "1.0"
+  image: fidelissauro/chip:latest
+  kind: deployment
+  port: 8080
+  protocol: HTTP
+
+env:
+  ENVIRONMENT: "dev"
+  VERSION: "retry-v1"
+
+replicas:
+  desired: 2
+  minimum: 2
+  maximum: 6
+
+probe:
+  readiness:
+    enabled: true
+    path: /healthcheck
+    failureThreshold: 10
+    periodSeconds: 10
+
+retry:
+  max_attemps: 2
+  timeout: 
+    enabled: true
+    max_timeout: 4s
+  error:
+    enabled: true
+    errors: gateway-error,connect-failure,refused-stream,5xx
+
+circuit_breaker:
+  enabled: true
+  max_connections: 1
+  max_pending_requests: 1
+  max_requests_per_connection: 1
+  max_consecutive_5xx_errors: 3
+  evaluation_interval: 1s
+  ejection_time: 10s
+  ejection_percent: 100
+
+ingress:
+  host: cb-app.k8s.raj.ninja

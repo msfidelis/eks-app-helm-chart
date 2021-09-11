@@ -145,6 +145,23 @@ retry:
     errors: gateway-error,connect-failure,refused-stream,5xx
 ```
 
+### Istio Circuit Breaker 
+
+You can improve Istio Circuit Breaker for pods and services. 
+
+```yaml
+# Circuit Breaking
+circuit_breaker:
+  enabled: true
+  max_connections: 500
+  max_pending_requests: 20
+  max_requests_per_connection: 20
+  max_consecutive_5xx_errors: 50
+  evaluation_interval: 1s
+  ejection_time: 10s
+  ejection_percent: 100
+```
+
 ### Capacity 
 
 ```yaml 

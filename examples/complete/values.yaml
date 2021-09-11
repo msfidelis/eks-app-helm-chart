@@ -13,9 +13,9 @@ env:
   VERSION: "v1-complete"
 
 replicas:
-  desired: 10
-  minimum: 10
-  maximum: 10
+  desired: 2
+  minimum: 2
+  maximum: 2
 
 resources:
   requests:
@@ -58,12 +58,12 @@ autoscaling:
 # High Availability Setup
 availability:
   multiaz: 
-    enabled: false
+    enabled: true
     mode: soft # Ex; soft or hard
 
   host: 
     enabled: true
-    mode: hard # Ex; soft or hard
+    mode: soft # Ex; soft or hard
 
 # Retry Options - Envoy
 retry:
@@ -72,8 +72,19 @@ retry:
     enabled: true
     max_timeout: 4s
   error:
-    enabled: false
+    enabled: true
     errors: gateway-error,connect-failure,refused-stream,5xx
+
+# Circuit Breaking
+circuit_breaker:
+  enabled: true
+  max_connections: 500
+  max_pending_requests: 20
+  max_requests_per_connection: 20
+  max_consecutive_5xx_errors: 50
+  evaluation_interval: 1s
+  ejection_time: 10s
+  ejection_percent: 100
 
 ingress:
   host: chip.k8s.raj.ninja
